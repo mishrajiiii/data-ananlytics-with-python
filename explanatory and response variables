@@ -1,0 +1,20 @@
+consider this datasheet:-
+ __________________________________________________________________
+|x =   |15         |25       |35       |45        |55       |65     |
+|y =   |150        |250      |350      |450       |550      |650    |
+ __________________________________________________________________
+
+here x= number of items
+     y= total price
+
+
+what are explanatory variables?
+-->  that causes the effect.
+
+what are response variables?
+-->  that response on that effect.
+
+
+In this datasheet the explanatory variable is x as (x= items). it will cause an effect. for example, an increase in number of items increases the price while decrease in number of items decreases the price.
+
+In this datasheet the response variable is y as (y= price). it will show response on that effect. for example, price will increase if number of items increases and vice versa.

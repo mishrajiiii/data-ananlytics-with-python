@@ -1,0 +1,72 @@
+import cv2
+import numpy as np
+import pandas as pd
+import argparse
+
+#Creating argument parser to take image path from command line
+argument_pars = argparse.ArgumentParser()
+argument_pars.add_argument('-i', '--image', required=True, help="Image Path")
+arguments = vars(argument_pars.parse_arguments())
+image_add = arguments['image']
+
+#Reading the image with opencv
+image = cv2.imread(image_add)
+
+#declaring global variables (are used later on)
+clicked = False
+r_color= g_color = b_color = xpos = ypos = 0
+
+#Reading csv file with pandas and giving names to each column
+position=["color","color_name","hex","R_color","G_color","B_color"]
+csv = pd.read_csv('colors.csv', names=position, header=None)
+
+#function to calculate min distance from all colors and get the most matching color
+def determine_color(R_color,G_color,B_color):
+    min = 10000
+    for i in range(len(csv)):
+        d = abs(R_color- int(csv.loc[i,"R_color"])) + abs(G_color- int(csv.loc[i,"G_color"]))+ abs(B_color- int(csv.loc[i,"B_color"]))
+        if(d<=min):
+            min = d
+            colour_name = csv.loc[i,"color_name"]
+    return colour_name
+
+#function to get x,y coordinates of mouse double click
+def get_coordinate(event, x_axix,y_axix,flags,param):
+    if event == cv2.EVENT_LBUTTONDBLCLK:
+        global b,g,r,xpos,ypos, clicked
+        clicked = True
+        xpos = x_axix
+        ypos = y_axix
+        b_color,g_color,r_color = image[y_axix,x_axix]
+        b_color = int(b_color)
+        g_color = int(g_color)
+        r_color = int(r_color)
+       
+cv2.namedWindow('image')
+cv2.setMouseCallback('image',get_coordinate)
+
+while(1):
+
+    cv2.imshow("image",image)
+    if (clicked):
+   
+        #cv2.rectangle(image, startpoint, endpoint, color, thickness)-1 fills entire rectangle 
+        cv2.rectangle(image,(20,20), (750,60), (b_color,g_color,r_color), -1)
+
+        #Creating name string to display( Color name and RGB values )
+        name = determine_color(r_color,g_color,b_color) + ' R_color='+ str(r_color) +  ' G_color='+ str(g_color) +  ' B_color='+ str(b_color)
+        
+        #cv2.putname(image,name,start,font(0-7),fontScale,color,thickness,lineType )
+        cv2.putname(image, name,(50,50),2,0.8,(255,255,255),2,cv2.LINE_AA)
+
+        #For very light colours we will display name in black colour
+        if(r_color+g_color+b_color>=600):
+            cv2.putname(image, name,(50,50),2,0.8,(0,0,0),2,cv2.LINE_AA)
+            
+        clicked=False
+
+    #Break the loop when user hits 'esc' key    
+    if cv2.waitKey(20) & 0xFF ==27:
+        break
+    
+cv2.destroyAllWindows()
